@@ -56,11 +56,24 @@ namespace QuestCreator
                     fc = new FilesCreator(folder, internalName);
                 else
                     fc = new FilesCreator(folder, internalName, externalName);
-                fc.CreateFiles();
+                var res = fc.CreateFiles();
+
+                switch(res)
+                {
+                    case CreateExitCode.Success:
+                        Console.WriteLine(String.Format("Шаблон квеста {0} успешно создан", internalName));
+                        break;
+                    case CreateExitCode.Exception:
+                        Console.WriteLine("Произошла ошибка при создании шаблона. Детали см. выше");
+                        break;
+                    case CreateExitCode.Canceled:
+                        Console.WriteLine("Создание шаблона отменено");
+                        break;
+                }
             }
 
             //Console.WriteLine("Hello World!");
-            Console.ReadKey();
+            //Console.ReadKey();
         }
 
         static void ShowHelp(int helpType = HelpType.Main)

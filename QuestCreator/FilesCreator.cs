@@ -5,6 +5,13 @@ using System.Text;
 
 namespace QuestCreator
 {
+    public enum CreateExitCode
+    {
+        Success = 0,
+        Exception = 1,
+        Canceled = 2
+    }
+
     public class FilesCreator
     {
         string Folder { get; set; }
@@ -25,24 +32,28 @@ namespace QuestCreator
             ExternalName = extName;
         }
 
-        public bool CreateFiles()
+        public CreateExitCode CreateFiles()
         {
             try
             {
                 var dir = Path.Combine(Folder, String.Format(Templates.MqFolder, InternalName));
+                var mobFile = Path.Combine(Folder, InternalName + ".mob");
                 if (Directory.Exists(dir))
                 {
                     Console.WriteLine(String.Format("Папка для квеста с названием {0} уже существует", InternalName));
                     Console.Write("Удалить её и создать заново?(y/n;д/н)");
                     var key = Console.ReadKey().KeyChar;
-                    var prettyKey = (key.ToString().ToLower());
+                    Console.WriteLine();
+                    var prettyKey = key.ToString().ToLower();
                     if (prettyKey == "y" || prettyKey == "д")
                     {
-                        Directory.Delete(dir);
+                        Directory.Delete(dir, true);
+                        File.Delete(mobFile);
                     }
                     else
                     {
-                        Console.WriteLine("Отменено пользователем");
+                        //Console.WriteLine("Отменено пользователем");
+                        return CreateExitCode.Canceled;
                     }
                 }
                 //Основная папка
@@ -62,20 +73,23 @@ namespace QuestCreator
                 //Файл описания квеста
                 var questfile = Path.Combine(dir, String.Format(Templates.QuestDescFileName, InternalName));
                 File.WriteAllText(questfile, String.Join('\n', Templates.QuestDesc));
-
+                //Файл настроек карты и миникарты
                 var mapsetfile = Path.Combine(settingsFolder, Templates.SettingsMapFileName);
                 File.WriteAllText(mapsetfile, String.Join('\n', String.Format(String.Join('\n', Templates.SettingsMap), InternalName)));
-
+                //Файл настроек переменных квеста
                 var questsetfile = Path.Combine(settingsFolder, Templates.SettingsQuestFileName);
                 File.WriteAllText(questsetfile, String.Join('\n', String.Format(String.Join('\n', Templates.SettingsQuest), InternalName)));
+                //Пустой моб-файл
+                using var fs = new FileStream(mobFile, FileMode.Create);
+                fs.Write(Templates.MobEmpty, 0, Templates.MobEmpty.Length);
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
-                return false;
+                return CreateExitCode.Exception;
             }
-            return true;
+            return CreateExitCode.Success;
         }
     }
 }
