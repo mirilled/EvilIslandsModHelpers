@@ -7,6 +7,7 @@ namespace QuestCreator
         public const string PathQuest = "-p";
         public const string NameQuest = "-n";
         public const string LabelQuest = "-l";
+        public const string MprName = "-m";
         public const string Help = "help";
     }
 

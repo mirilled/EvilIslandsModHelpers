@@ -16,20 +16,15 @@ namespace QuestCreator
     {
         string Folder { get; set; }
         string InternalName { get; set; }
-        string ExternalName { get; set; }
+        public string ExternalName { get; set; }
+        public string MprName { get; set; }
 
         public FilesCreator(string folder, string intName)
         {
             Folder = folder;
             InternalName = intName;
             ExternalName = intName;
-        }
-
-        public FilesCreator(string folder, string intName, string extName)
-        {
-            Folder = folder;
-            InternalName = intName;
-            ExternalName = extName;
+            MprName = MQConstants.DefaultMprName;
         }
 
         public CreateExitCode CreateFiles()
@@ -75,7 +70,7 @@ namespace QuestCreator
                 File.WriteAllText(questfile, String.Join('\n', Templates.QuestDesc));
                 //Файл настроек карты и миникарты
                 var mapsetfile = Path.Combine(settingsFolder, Templates.SettingsMapFileName);
-                File.WriteAllText(mapsetfile, String.Join('\n', String.Format(String.Join('\n', Templates.SettingsMap), InternalName)));
+                File.WriteAllText(mapsetfile, String.Join('\n', String.Format(String.Join('\n', Templates.SettingsMap), InternalName, MprName)));
                 //Файл настроек переменных квеста
                 var questsetfile = Path.Combine(settingsFolder, Templates.SettingsQuestFileName);
                 File.WriteAllText(questsetfile, String.Join('\n', String.Format(String.Join('\n', Templates.SettingsQuest), InternalName)));

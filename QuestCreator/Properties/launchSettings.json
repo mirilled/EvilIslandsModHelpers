@@ -2,7 +2,7 @@
   "profiles": {
     "QuestCreator": {
       "commandName": "Project",
-      "commandLineArgs": "-p d:\\Temp\\ -n testCreate"
+      "commandLineArgs": "-p d:\\Temp\\ -n testCreate -m zone3"
     }
   }
 }

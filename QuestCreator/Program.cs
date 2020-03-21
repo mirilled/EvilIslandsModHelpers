@@ -13,51 +13,58 @@ namespace QuestCreator
                 ShowHelp();
             else
             {
-                string folder, internalName, externalName = null;
-                int pathKeyIdx = Array.IndexOf(args, ConsoleKeys.PathQuest);
-                if (pathKeyIdx == -1)
+                string folder, internalName, externalName, mprName = null;
+                int pathIdx = Array.IndexOf(args, ConsoleKeys.PathQuest);
+                if (pathIdx == -1)
                 {
                     ShowHelp(HelpType.Path);
                     return;
                 }
 
-                int nameKeyIdx = Array.IndexOf(args, ConsoleKeys.NameQuest);
-                if(nameKeyIdx == -1)
+                int nameIdx = Array.IndexOf(args, ConsoleKeys.NameQuest);
+                if(nameIdx == -1)
                 {
                     ShowHelp(HelpType.Name);
                     return;
                 }
-                int pathIdx = pathKeyIdx + 1;
-                if(args.Length <= pathIdx && !Directory.Exists(args[pathIdx]))
+
+                if(args.Length <= ++pathIdx && !Directory.Exists(args[pathIdx]))
                 {
                     Console.WriteLine(String.Format("Не указано значение аргумента {0} или путь указанный в нём не существует", ConsoleKeys.PathQuest));
                     return;
                 }
                 folder = args[pathIdx];
 
-                int nameIdx = nameKeyIdx + 1;
-                if(args.Length <= nameIdx)
+                if(args.Length <= ++nameIdx)
                 {
                     Console.WriteLine(String.Format("Не указано значение аргумента {0}", ConsoleKeys.NameQuest));
                     return;
                 }
                 internalName = args[nameIdx];
 
-                int labelKeyIdx = Array.IndexOf(args, ConsoleKeys.LabelQuest);
-                int labelIdx = -1;
-                if (labelKeyIdx != -1)
+                var fc = new FilesCreator(folder, internalName);
+
+                int labelIdx = Array.IndexOf(args, ConsoleKeys.LabelQuest);
+                if (labelIdx != -1)
                 {
-                    labelIdx = labelKeyIdx + 1;
-                    externalName = args[labelIdx];
+                    if (args.Length > ++labelIdx)
+                    {
+                        externalName = args[labelIdx];
+                        fc.ExternalName = externalName;
+                    }
                 }
-                FilesCreator fc;
 
-                if(labelKeyIdx == -1)
-                    fc = new FilesCreator(folder, internalName);
-                else
-                    fc = new FilesCreator(folder, internalName, externalName);
+                int mprNameIdx = Array.IndexOf(args, ConsoleKeys.MprName);
+                if (mprNameIdx != -1)
+                {
+                    if (args.Length > ++mprNameIdx)
+                    {
+                        mprName = args[mprNameIdx];
+                        fc.MprName = mprName;
+                    }
+                }
+
                 var res = fc.CreateFiles();
-
                 switch(res)
                 {
                     case CreateExitCode.Success:
@@ -71,9 +78,6 @@ namespace QuestCreator
                         break;
                 }
             }
-
-            //Console.WriteLine("Hello World!");
-            //Console.ReadKey();
         }
 
         static void ShowHelp(int helpType = HelpType.Main)
